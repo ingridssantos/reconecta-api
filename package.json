@@ -1,0 +1,29 @@
+
+{
+  "name": "reconecta-api",
+  "version": "1.0.0",
+  "description": "API REST do projeto ReConecta para conectar pessoas por meio de doações e solicitações.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": [
+    "reconecta",
+    "doacoes",
+    "solidariedade",
+    "api",
+    "nodejs",
+    "postgresql"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "pg": "^8.23.1",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
+  }
+}
