@@ -19,6 +19,7 @@ e contribuindo para a redução das desigualdades sociais.
 
 - Cadastro, consulta, atualização e exclusão de doações.
 - Cadastro, consulta, atualização e exclusão de solicitações.
+- Autenticação de administradores.
 
 As requisições e respostas utilizam o formato JSON.
             `
@@ -31,6 +32,17 @@ As requisições e respostas utilizam o formato JSON.
             }
         ],
 
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                    description: 'Informe o token JWT recebido no login.'
+                }
+            }
+        },
+
         tags: [
             {
                 name: 'Doações',
@@ -39,6 +51,10 @@ As requisições e respostas utilizam o formato JSON.
             {
                 name: 'Solicitações',
                 description: 'Operações relacionadas às necessidades de doação.'
+            },
+            {
+                name: 'Autenticação',
+                description: 'Operações de acesso dos administradores.'
             }
         ]
     },

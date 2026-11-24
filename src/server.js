@@ -2,15 +2,18 @@
 require('dotenv').config();
 
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
 const doacoesRoutes = require('./routes/doacoes');
 const solicitacoesRoutes = require('./routes/solicitacoes');
+const authRoutes = require('./routes/auth');
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./docs/swagger');
 
 // Configurações gerais
+app.use(cors());
 app.use(express.json());
 
 // Documentação Swagger
@@ -19,6 +22,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Rotas da API
 app.use('/api/doacoes', doacoesRoutes);
 app.use('/api/solicitacoes', solicitacoesRoutes);
+app.use('/api/auth', authRoutes);
 
 // Verificar se a API está funcionando
 app.get('/api/status', (req, res) => {

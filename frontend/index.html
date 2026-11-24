@@ -1,0 +1,679 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="ReConecta: conectando pessoas através da solidariedade e das doações."
+    >
+
+    <title>ReConecta | Doe. Conecte. Transforme.</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div id="app">
+
+        <!-- CABEÇALHO -->
+        <header class="header">
+
+            <a href="#" class="logo">
+                <span class="logo-icon">R</span>
+                <span>ReConecta</span>
+            </a>
+
+            <nav class="navigation">
+                <a href="#inicio">Início</a>
+                <a href="#doacoes">Doações</a>
+                <a href="#solicitacoes">Solicitações</a>
+            </nav>
+
+
+<div class="header-actions">
+
+    <button
+        class="theme-button"
+        id="theme-toggle"
+        onclick="alternarTema()"
+        aria-label="Alternar tema visual"
+        title="Alternar tema"
+    >
+        ◐
+    </button>
+
+    <button
+        type="button"
+        class="button-secondary"
+        id="btn-login-admin"
+    >
+        Entrar como administrador
+    </button>
+
+    <div id="admin-logado" hidden>
+        <span id="admin-nome"></span>
+
+        <button
+            type="button"
+            class="button-secondary"
+            id="btn-logout-admin"
+        >
+            Sair
+        </button>
+    </div>
+
+    <a href="#cadastrar" class="button-primary">
+        + Cadastrar doação ou pedido
+    </a>
+
+</div>
+
+        </header>
+
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main id="inicio">
+
+
+            <!-- SEÇÃO PRINCIPAL -->
+            <section class="hero">
+
+                <div class="hero-content">
+
+                    <span class="hero-label">
+                        SOLIDARIEDADE QUE CONECTA
+                    </span>
+
+                    <h1>
+                        O que sobra para você,
+                        pode ser tudo para alguém.
+                    </h1>
+
+                    <p>
+                        Conectamos pessoas que desejam doar
+                        com quem precisa de ajuda.
+                        Pequenas atitudes podem transformar vidas.
+                    </p>
+
+                    <div class="hero-actions">
+
+                        <a href="#doacoes" class="button-primary">
+                            Encontrar doações
+                        </a>
+
+                        <a href="#cadastrar" class="button-secondary">
+                            Quero fazer uma doação
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <div class="hero-visual">
+
+                    <div class="hero-card">
+
+                        <span class="hero-card-icon">💚</span>
+
+                        <h3>Faça parte dessa corrente</h3>
+
+                        <p>
+                            Doe o que não faz falta para você.
+                            Transforme o dia de alguém.
+                        </p>
+
+                    </div>
+
+                    <div class="hero-decoration decoration-one"></div>
+                    <div class="hero-decoration decoration-two"></div>
+
+                </div>
+
+            </section>
+
+
+            <!-- MURAL DE DOAÇÕES E NECESSIDADES -->
+            <section class="murals" id="doacoes">
+
+                <div class="murals-header">
+
+                    <span class="section-label">
+                        FAÇA PARTE DA MUDANÇA
+                    </span>
+
+                    <h2>Solidariedade que aproxima pessoas</h2>
+
+                    <p>
+                        Encontre doações disponíveis ou compartilhe
+                        algo que alguém esteja precisando.
+                    </p>
+
+                </div>
+
+
+                <!-- FILTROS DOS MURAIS -->
+                <div class="mural-filters">
+
+                    <div class="filter-search">
+
+                        <label for="filtro-busca">Buscar</label>
+
+                        <input
+                            type="search"
+                            id="filtro-busca"
+                            placeholder="Buscar item, alimento, móvel..."
+                        >
+
+                    </div>
+
+
+                    <div class="filter-category">
+
+                        <label for="filtro-categoria">Categoria</label>
+
+                        <select id="filtro-categoria">
+
+                            <option value="">Todas as categorias</option>
+                            <option value="Alimentos">Alimentos</option>
+                            <option value="Saúde & Higiene">Saúde & Higiene</option>
+                            <option value="Móveis">Móveis</option>
+                            <option value="Vestuário">Vestuário</option>
+                            <option value="Livros">Livros</option>
+                            <option value="Eletrônicos">Eletrônicos</option>
+                            <option value="Outros">Outros</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="filter-location">
+
+                        <label for="filtro-localizacao">Localização</label>
+
+                        <select id="filtro-localizacao">
+
+                            <option value="">Todas as localidades</option>
+
+                            <option value="São Gonçalo - Centro">
+                                São Gonçalo - Centro
+                            </option>
+
+                            <option value="Alcântara - São Gonçalo">
+                                Alcântara - São Gonçalo
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ABAS DOS MURAIS -->
+                <div class="mural-tabs">
+
+                    <button
+                        class="mural-tab active"
+                        data-mural="doacoes"
+                    >
+                        Doações disponíveis
+                    </button>
+
+                    <button
+                        class="mural-tab"
+                        data-mural="solicitacoes"
+                    >
+                        Mural de necessidades
+                    </button>
+
+                </div>
+
+
+                <!-- MURAL DE DOAÇÕES -->
+                <div class="mural-content active" id="mural-doacoes">
+
+                    <div class="mural-toolbar">
+
+                        <h3>Oportunidades para ajudar</h3>
+
+                        <button
+                            class="button-primary"
+                            id="cadastrar-doacao"
+                        >
+                            + Quero doar
+                        </button>
+
+                    </div>
+
+                    <div
+                        class="donations-list"
+                        id="lista-doacoes"
+                    >
+                        <!-- Os cards de doações serão carregados pela API -->
+                    </div>
+
+                </div>
+
+
+                <!-- MURAL DE NECESSIDADES -->
+                <div
+                    class="mural-content"
+                    id="mural-solicitacoes"
+                >
+
+                    <div class="mural-toolbar">
+
+                        <h3>Pessoas que precisam de ajuda</h3>
+
+                        <button
+                            class="button-primary"
+                            id="cadastrar-solicitacao"
+                        >
+                            + Fazer solicitação
+                        </button>
+
+                    </div>
+
+                    <div
+                        class="requests-list"
+                        id="lista-solicitacoes"
+                    >
+                        <!-- Os cards de solicitações serão carregados pela API -->
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- MODAL DE NOVA DOAÇÃO -->
+            <div
+                id="modal-doacao"
+                class="modal"
+                hidden
+            >
+
+                <div class="modal-content">
+
+                    <div class="modal-header">
+
+                        <div>
+                            <h2>Quero fazer uma doação</h2>
+
+                            <p>
+                                Compartilhe o que você pode oferecer à comunidade.
+                            </p>
+                        </div>
+
+                        <button
+                            type="button"
+                            id="btn-fechar-modal-doacao"
+                            class="modal-close"
+                            aria-label="Fechar"
+                        >
+                            &times;
+                        </button>
+
+                    </div>
+
+
+                    <form
+                        id="form-doacao"
+                        class="form-solicitacao"
+                    >
+
+                        <div class="form-group">
+
+                            <label for="titulo-doacao">
+                                O que você deseja doar?
+                            </label>
+
+                            <input
+                                type="text"
+                                id="titulo-doacao"
+                                name="titulo"
+                                placeholder="Ex.: Cesta básica"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="descricao-doacao">
+                                Descrição
+                            </label>
+
+                            <textarea
+                                id="descricao-doacao"
+                                name="descricao"
+                                placeholder="Descreva o item e suas condições"
+                                required
+                            ></textarea>
+
+                        </div>
+
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="categoria-doacao">
+                                    Categoria
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="categoria-doacao"
+                                    name="categoria"
+                                    placeholder="Ex.: Alimentos"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="localizacao-doacao">
+                                    Localização
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="localizacao-doacao"
+                                    name="localizacao"
+                                    placeholder="Ex.: Niterói - RJ"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="modal-actions">
+
+                            <button
+                                type="button"
+                                id="btn-cancelar-doacao"
+                                class="button-secondary"
+                            >
+                                Cancelar
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="button-primary"
+                            >
+                                Cadastrar doação
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- MODAL DE NOVA SOLICITAÇÃO -->
+            <div
+                id="modal-solicitacao"
+                class="modal"
+                hidden
+            >
+
+                <div class="modal-content">
+
+                    <div class="modal-header">
+
+                        <div>
+                            <h2>Nova solicitação</h2>
+
+                            <p>
+                                Compartilhe sua necessidade com a comunidade.
+                            </p>
+                        </div>
+
+                      
+  
+
+                        <button
+                            type="button"
+                            id="btn-fechar-modal"
+                            class="modal-close"
+                            aria-label="Fechar"
+                        >
+                            &times;
+                        </button>
+
+                    </div>
+
+
+                    <form
+                        id="form-solicitacao"
+                        class="form-solicitacao"
+                    >
+
+                        <div class="form-group">
+
+                            <label for="titulo-solicitacao">
+                                Título
+                            </label>
+
+                            <input
+                                type="text"
+                                id="titulo-solicitacao"
+                                name="titulo"
+                                placeholder="Ex.: Preciso de uma geladeira"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="descricao-solicitacao">
+                                Descrição
+                            </label>
+
+                            <textarea
+                                id="descricao-solicitacao"
+                                name="descricao"
+                                placeholder="Conte um pouco mais sobre sua necessidade"
+                                required
+                            ></textarea>
+
+                        </div>
+
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="categoria-solicitacao">
+                                    Categoria
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="categoria-solicitacao"
+                                    name="categoria"
+                                    placeholder="Ex.: Eletrodomésticos"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="localizacao-solicitacao">
+                                    Localização
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="localizacao-solicitacao"
+                                    name="localizacao"
+                                    placeholder="Ex.: Niterói - RJ"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="prioridade-solicitacao">
+                                Prioridade
+                            </label>
+
+                            <select
+                                id="prioridade-solicitacao"
+                                name="prioridade"
+                                required
+                            >
+
+                                <option value="urgente">Urgente</option>
+
+                                <option
+                                    value="moderada"
+                                    selected
+                                >
+                                    Moderada
+                                </option>
+
+                                <option value="continua">Contínua</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="modal-actions">
+
+                            <button
+                                type="button"
+                                id="btn-cancelar-solicitacao"
+                                class="button-secondary"
+                            >
+                                Cancelar
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="button-primary"
+                            >
+                                Enviar solicitação
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+        </main>
+<!-- MODAL DE LOGIN DO ADMINISTRADOR -->
+<div id="modal-login-admin" class="modal" hidden>
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Acesso administrativo</h2>
+                <p>Entre para gerenciar doações e solicitações.</p>
+            </div>
+
+            <button
+                type="button"
+                id="btn-fechar-login"
+                class="modal-close"
+                aria-label="Fechar"
+            >
+                &times;
+            </button>
+
+        </div>
+
+        <form id="form-login-admin" class="form-solicitacao">
+
+            <div class="form-group">
+                <label for="email-admin">E-mail</label>
+                <input
+                    type="email"
+                    id="email-admin"
+                    name="email"
+                    placeholder="Digite seu e-mail"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="senha-admin">Senha</label>
+                <input
+                    type="password"
+                    id="senha-admin"
+                    name="senha"
+                    placeholder="Digite sua senha"
+                    required
+                >
+            </div>
+
+            <p id="mensagem-login-admin" role="alert"></p>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="btn-cancelar-login"
+                    class="button-secondary"
+                >
+                    Cancelar
+                </button>
+
+                <button type="submit" class="button-primary">
+                    Entrar
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+    <script src="js/app.js"></script>
+
+</body>
+</html>

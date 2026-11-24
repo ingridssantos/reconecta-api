@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const pool = require('../config/database');
-
+const autenticarAdmin = require('../middlewares/auth');
 /**
  * @swagger
  * /api/doacoes:
@@ -128,6 +128,8 @@ router.post('/', async (req, res) => {
  *   put:
  *     summary: Atualiza uma doação
  *     tags: [Doações]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -167,7 +169,7 @@ router.post('/', async (req, res) => {
  */
 
 // Editar uma doação
-router.put('/:id', async (req, res) => {
+router.put('/:id', autenticarAdmin, async (req, res) => {
     try {
         const id = Number(req.params.id);
         const dados = req.body || {};
@@ -253,7 +255,7 @@ router.put('/:id', async (req, res) => {
  */
 
 // Excluir uma doação
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', autenticarAdmin, async (req, res) => {
     try {
         const id = Number(req.params.id);
 

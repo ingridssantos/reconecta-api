@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const pool = require('../config/database');
+const autenticarAdmin = require('../middlewares/auth');
 
 /**
  * @swagger
@@ -22,7 +23,7 @@ router.get('/', async (req, res) => {
     try {
         const resultado = await pool.query(
             `SELECT id, titulo, descricao, categoria, localizacao,
-                    status, data_cadastro AS "dataCadastro"
+                    status, prioridade, data_cadastro AS "dataCadastro"
              FROM solicitacoes
              ORDER BY id`
         );
@@ -81,6 +82,14 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const dados = req.body || {};
+        const prioridade = dados.prioridade || 'moderada';
+        const prioridadesPermitidas = ['urgente', 'moderada', 'continua'];
+
+        if (!prioridadesPermitidas.includes(prioridade)) {
+            return res.status(400).json({
+                erro: 'Prioridade inválida. Utilize urgente, moderada ou continua.'
+            });
+        }
 
         const campos = [
             dados.titulo,
@@ -102,11 +111,11 @@ router.post('/', async (req, res) => {
 
         const resultado = await pool.query(
             `INSERT INTO solicitacoes
-             (titulo, descricao, categoria, localizacao)
-             VALUES ($1, $2, $3, $4)
+             (titulo, descricao, categoria, localizacao, prioridade)
+             VALUES ($1, $2, $3, $4, $5)
              RETURNING id, titulo, descricao, categoria, localizacao,
-                       status, data_cadastro AS "dataCadastro"`,
-            [titulo, descricao, categoria, localizacao]
+                       status, prioridade, data_cadastro AS "dataCadastro"`,
+            [titulo, descricao, categoria, localizacao, prioridade]
         );
 
         res.status(201).json({
@@ -129,6 +138,8 @@ router.post('/', async (req, res) => {
  *   put:
  *     summary: Atualiza uma solicitação
  *     tags: [Solicitações]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -160,6 +171,10 @@ router.post('/', async (req, res) => {
  *               localizacao:
  *                 type: string
  *                 example: São Gonçalo - RJ
+ *               prioridade:
+ *                 type: string
+ *                 enum: [urgente, moderada, continua]
+ *                 example: moderada
  *     responses:
  *       200:
  *         description: Solicitação atualizada com sucesso.
@@ -172,7 +187,7 @@ router.post('/', async (req, res) => {
  */
 
 // Editar uma solicitação
-router.put('/:id', async (req, res) => {
+router.put('/:id', autenticarAdmin, async (req, res) => {
     try {
         const id = Number(req.params.id);
         const dados = req.body || {};
@@ -180,6 +195,15 @@ router.put('/:id', async (req, res) => {
         if (!Number.isInteger(id) || id <= 0) {
             return res.status(400).json({
                 erro: 'Informe um ID válido.'
+            });
+        }
+
+        const prioridade = req.body.prioridade || 'moderada';
+        const prioridadesPermitidas = ['urgente', 'moderada', 'continua'];
+
+        if (!prioridadesPermitidas.includes(prioridade)) {
+            return res.status(400).json({
+                erro: 'Prioridade inválida. Utilize urgente, moderada ou continua.'
             });
         }
 
@@ -203,14 +227,15 @@ router.put('/:id', async (req, res) => {
 
         const resultado = await pool.query(
             `UPDATE solicitacoes
-             SET titulo = $1,
-                 descricao = $2,
-                 categoria = $3,
-                 localizacao = $4
-             WHERE id = $5
+            SET titulo = $1,
+                descricao = $2,
+                categoria = $3,
+                localizacao = $4,
+                prioridade = $5
+            WHERE id = $6
              RETURNING id, titulo, descricao, categoria, localizacao,
-                       status, data_cadastro AS "dataCadastro"`,
-            [titulo, descricao, categoria, localizacao, id]
+                       status, prioridade, data_cadastro AS "dataCadastro"`,
+            [titulo, descricao, categoria, localizacao, prioridade, id]
         );
 
         if (resultado.rows.length === 0) {
@@ -233,12 +258,15 @@ router.put('/:id', async (req, res) => {
 });
 
 
+
 /**
  * @swagger
  * /api/solicitacoes/{id}:
  *   delete:
  *     summary: Exclui uma solicitação
  *     tags: [Solicitações]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -248,17 +276,19 @@ router.put('/:id', async (req, res) => {
  *         description: ID da solicitação
  *     responses:
  *       200:
- *         description: Solicitação excluída com sucesso.
+ *         description: Solicitação excluída com sucesso
  *       400:
- *         description: ID inválido.
+ *         description: ID inválido
+ *       401:
+ *         description: Não autorizado
  *       404:
- *         description: Solicitação não encontrada.
+ *         description: Solicitação não encontrada
  *       500:
- *         description: Erro ao excluir solicitação.
+ *         description: Erro interno do servidor
  */
 
 // Excluir uma solicitação
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', autenticarAdmin, async (req, res) => {
     try {
         const id = Number(req.params.id);
 
@@ -292,3 +322,4 @@ router.delete('/:id', async (req, res) => {
 });
 
 module.exports = router;
+
