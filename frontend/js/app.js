@@ -186,6 +186,79 @@ function iniciarMurais() {
     });
 
 
+    // BOTÃO DE DOAÇÃO DO BANNER
+    const btnBannerDoacao = document.getElementById(
+        'banner-cadastrar-doacao'
+    );
+
+    if (btnBannerDoacao) {
+        btnBannerDoacao.addEventListener('click', () => {
+            document.getElementById('cadastrar-doacao').click();
+        });
+    }
+
+
+    // MENU DE CADASTRO DO CABEÇALHO
+    const btnMenuCadastro = document.getElementById('btn-menu-cadastro');
+    const menuCadastro = document.getElementById('menu-cadastro');
+
+    const opcaoDoacao = document.getElementById('menu-cadastrar-doacao');
+    const opcaoSolicitacao = document.getElementById('menu-cadastrar-solicitacao');
+
+    if (btnMenuCadastro && menuCadastro) {
+
+        btnMenuCadastro.addEventListener('click', () => {
+
+            menuCadastro.hidden = !menuCadastro.hidden;
+
+            btnMenuCadastro.setAttribute(
+                'aria-expanded',
+                String(!menuCadastro.hidden)
+            );
+
+        });
+
+        if (opcaoDoacao) {
+
+            opcaoDoacao.addEventListener('click', () => {
+
+                menuCadastro.hidden = true;
+                btnMenuCadastro.setAttribute('aria-expanded', 'false');
+
+                document.getElementById('cadastrar-doacao').click();
+
+            });
+
+        }
+
+        if (opcaoSolicitacao) {
+
+            opcaoSolicitacao.addEventListener('click', () => {
+
+                menuCadastro.hidden = true;
+                btnMenuCadastro.setAttribute('aria-expanded', 'false');
+
+                document.getElementById('cadastrar-solicitacao').click();
+
+            });
+
+        }
+
+        document.addEventListener('click', evento => {
+
+            if (
+                !btnMenuCadastro.contains(evento.target) &&
+                !menuCadastro.contains(evento.target)
+            ) {
+                menuCadastro.hidden = true;
+                btnMenuCadastro.setAttribute('aria-expanded', 'false');
+            }
+
+        });
+
+    }
+
+
     document.addEventListener('keydown', evento => {
 
         if (evento.key === 'Escape') {
@@ -504,6 +577,62 @@ function normalizarTexto(texto) {
 
 
 /* =================================
+   CONTATO PELO WHATSAPP
+================================= */
+
+function abrirWhatsApp(contato, telefone, tipo, titulo) {
+
+    if (!telefone) {
+
+        alert(
+            'Este cadastro ainda não possui um WhatsApp informado.'
+        );
+
+        return;
+
+    }
+
+    // Mantém somente os números do telefone
+    let numero = String(telefone).replace(/\D/g, '');
+
+    // Adiciona o código do Brasil quando necessário
+    if (numero.length === 10 || numero.length === 11) {
+        numero = `55${numero}`;
+    }
+
+    if (numero.length < 12 || numero.length > 13) {
+
+        alert(
+            'O número de WhatsApp cadastrado parece inválido.'
+        );
+
+        return;
+
+    }
+
+    let mensagem;
+
+    if (tipo === 'doacao') {
+
+        mensagem =
+            `Olá, ${contato || 'tudo bem'}! Tenho interesse na doação "${titulo}" que vi no ReConecta.`;
+
+    } else {
+
+        mensagem =
+            `Olá, ${contato || 'tudo bem'}! Vi sua solicitação "${titulo}" no ReConecta e gostaria de ajudar.`;
+
+    }
+
+    const url =
+        `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+
+    window.open(url, '_blank', 'noopener,noreferrer');
+
+}
+
+
+/* =================================
    PREPARAR FORMULÁRIOS
 ================================= */
 
@@ -607,10 +736,12 @@ function editarDoacao(doacao) {
 
     doacaoEmEdicao = doacao.id;
 
-    form.elements['titulo'].value = doacao.titulo;
-    form.elements['descricao'].value = doacao.descricao;
-    form.elements['categoria'].value = doacao.categoria;
-    form.elements['localizacao'].value = doacao.localizacao;
+    form.elements['titulo'].value = doacao.titulo || '';
+    form.elements['descricao'].value = doacao.descricao || '';
+    form.elements['categoria'].value = doacao.categoria || '';
+    form.elements['localizacao'].value = doacao.localizacao || '';
+    form.elements['nomeContato'].value = doacao.nomeContato || '';
+    form.elements['whatsapp'].value = doacao.whatsapp || '';
 
     document.querySelector('#modal-doacao h2').textContent =
         'Editar doação';
@@ -643,12 +774,14 @@ function editarSolicitacao(solicitacao) {
 
     solicitacaoEmEdicao = solicitacao.id;
 
-    form.elements['titulo'].value = solicitacao.titulo;
-    form.elements['descricao'].value = solicitacao.descricao;
-    form.elements['categoria'].value = solicitacao.categoria;
-    form.elements['localizacao'].value = solicitacao.localizacao;
+    form.elements['titulo'].value = solicitacao.titulo || '';
+    form.elements['descricao'].value = solicitacao.descricao || '';
+    form.elements['categoria'].value = solicitacao.categoria || '';
+    form.elements['localizacao'].value = solicitacao.localizacao || '';
     form.elements['prioridade'].value =
         solicitacao.prioridade || 'moderada';
+    form.elements['nomeContato'].value = solicitacao.nomeContato || '';
+    form.elements['whatsapp'].value = solicitacao.whatsapp || '';
 
     document.querySelector('#modal-solicitacao h2').textContent =
         'Editar solicitação';
@@ -793,8 +926,20 @@ async function carregarDoacoes() {
             informacoes.appendChild(linhaInformacoes);
 
             const botao = document.createElement('button');
+            botao.type = 'button';
             botao.className = 'card-action';
             botao.textContent = 'TENHO INTERESSE';
+
+            botao.addEventListener('click', () => {
+
+                abrirWhatsApp(
+                    doacao.nomeContato,
+                    doacao.whatsapp,
+                    'doacao',
+                    doacao.titulo
+                );
+
+            });
 
             card.append(tags, titulo, descricao, informacoes, botao);
 
@@ -911,8 +1056,20 @@ async function carregarSolicitacoes() {
             informacoes.appendChild(linhaInformacoes);
 
             const botao = document.createElement('button');
+            botao.type = 'button';
             botao.className = 'card-action';
             botao.textContent = 'QUERO AJUDAR';
+
+            botao.addEventListener('click', () => {
+
+                abrirWhatsApp(
+                    solicitacao.nomeContato,
+                    solicitacao.whatsapp,
+                    'solicitacao',
+                    solicitacao.titulo
+                );
+
+            });
 
             card.append(tags, titulo, descricao, informacoes, botao);
 
@@ -967,7 +1124,9 @@ function iniciarCadastroDoacao() {
             titulo: form.elements['titulo'].value.trim(),
             descricao: form.elements['descricao'].value.trim(),
             categoria: form.elements['categoria'].value.trim(),
-            localizacao: form.elements['localizacao'].value.trim()
+            localizacao: form.elements['localizacao'].value.trim(),
+            nomeContato: form.elements['nomeContato'].value.trim(),
+            whatsapp: form.elements['whatsapp'].value.trim()
 
         };
 
@@ -1008,8 +1167,8 @@ function iniciarCadastroDoacao() {
 
             alert(
                 editando
-                    ? 'Doação atualizada com sucesso! 💚'
-                    : 'Doação cadastrada com sucesso! 💚'
+                    ? 'Doação atualizada com sucesso!'
+                    : 'Doação cadastrada com sucesso!'
             );
 
             cancelarEdicaoDoacao();
@@ -1052,7 +1211,9 @@ function iniciarCadastroSolicitacao() {
             descricao: form.elements['descricao'].value.trim(),
             categoria: form.elements['categoria'].value.trim(),
             localizacao: form.elements['localizacao'].value.trim(),
-            prioridade: form.elements['prioridade'].value
+            prioridade: form.elements['prioridade'].value,
+            nomeContato: form.elements['nomeContato'].value.trim(),
+            whatsapp: form.elements['whatsapp'].value.trim()
 
         };
 
@@ -1093,8 +1254,8 @@ function iniciarCadastroSolicitacao() {
 
             alert(
                 editando
-                    ? 'Solicitação atualizada com sucesso! 💚'
-                    : 'Solicitação cadastrada com sucesso! 💚'
+                    ? 'Solicitação atualizada com sucesso!'
+                    : 'Solicitação cadastrada com sucesso!'
             );
 
             cancelarEdicaoSolicitacao();

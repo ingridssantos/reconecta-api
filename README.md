@@ -6,6 +6,8 @@ O ReConecta é uma aplicação web desenvolvida para conectar pessoas que deseja
 
 O projeto está alinhado ao **ODS 10 — Redução das Desigualdades**, estabelecido pela Organização das Nações Unidas (ONU).
 
+o link público mostra o frontend, mas as funcionalidades que dependem da API ainda precisam de hospedagem do backend para funcionar para outras pessoas: https://reconecta-api-frontend.vercel.app/
+
 ## Objetivo
 
 Facilitar a divulgação e a busca por doações, criando uma conexão entre doadores e pessoas que possuem necessidades específicas.

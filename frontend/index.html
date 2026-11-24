@@ -42,51 +42,70 @@
                 <a href="#solicitacoes">Solicitações</a>
             </nav>
 
+            <div class="header-actions">
 
-<div class="header-actions">
+                <button
+                    class="theme-button"
+                    id="theme-toggle"
+                    onclick="alternarTema()"
+                    aria-label="Alternar tema visual"
+                    title="Alternar tema"
+                >
+                    ◐
+                </button>
 
-    <button
-        class="theme-button"
-        id="theme-toggle"
-        onclick="alternarTema()"
-        aria-label="Alternar tema visual"
-        title="Alternar tema"
-    >
-        ◐
-    </button>
+                <button
+                    type="button"
+                    class="button-secondary"
+                    id="btn-login-admin"
+                >
+                    Entrar como administrador
+                </button>
 
-    <button
-        type="button"
-        class="button-secondary"
-        id="btn-login-admin"
-    >
-        Entrar como administrador
-    </button>
+                <div id="admin-logado" hidden>
+                    <span id="admin-nome"></span>
 
-    <div id="admin-logado" hidden>
-        <span id="admin-nome"></span>
+                    <button
+                        type="button"
+                        class="button-secondary"
+                        id="btn-logout-admin"
+                    >
+                        Sair
+                    </button>
+                </div>
 
-        <button
-            type="button"
-            class="button-secondary"
-            id="btn-logout-admin"
-        >
-            Sair
-        </button>
-    </div>
+                <div class="dropdown-cadastro">
 
-    <a href="#cadastrar" class="button-primary">
-        + Cadastrar doação ou pedido
-    </a>
+                    <button
+                        type="button"
+                        class="button-primary"
+                        id="btn-menu-cadastro"
+                        aria-expanded="false"
+                    >
+                        + Cadastrar doação ou pedido
+                    </button>
 
-</div>
+                    <div id="menu-cadastro" class="menu-cadastro" hidden>
+
+                        <button type="button" id="menu-cadastrar-doacao">
+                            Cadastrar doação
+                        </button>
+
+                        <button type="button" id="menu-cadastrar-solicitacao">
+                            Cadastrar pedido
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </header>
 
 
         <!-- CONTEÚDO PRINCIPAL -->
         <main id="inicio">
-
 
             <!-- SEÇÃO PRINCIPAL -->
             <section class="hero">
@@ -114,9 +133,13 @@
                             Encontrar doações
                         </a>
 
-                        <a href="#cadastrar" class="button-secondary">
+                        <button
+                            type="button"
+                            class="button-secondary"
+                            id="banner-cadastrar-doacao"
+                        >
                             Quero fazer uma doação
-                        </a>
+                        </button>
 
                     </div>
 
@@ -407,6 +430,46 @@
                         </div>
 
 
+                        <!-- CONTATO DE QUEM ESTÁ DOANDO -->
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="nome-contato-doacao">
+                                    Seu nome
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="nome-contato-doacao"
+                                    name="nomeContato"
+                                    placeholder="Ex.: Maria"
+                                    maxlength="100"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="whatsapp-doacao">
+                                    Seu WhatsApp com DDD
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    id="whatsapp-doacao"
+                                    name="whatsapp"
+                                    placeholder="Ex.: (21) 99999-9999"
+                                    maxlength="20"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
                         <div class="modal-actions">
 
                             <button
@@ -451,9 +514,6 @@
                                 Compartilhe sua necessidade com a comunidade.
                             </p>
                         </div>
-
-                      
-  
 
                         <button
                             type="button"
@@ -571,6 +631,46 @@
                         </div>
 
 
+                        <!-- CONTATO DE QUEM ESTÁ SOLICITANDO -->
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="nome-contato-solicitacao">
+                                    Seu nome
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="nome-contato-solicitacao"
+                                    name="nomeContato"
+                                    placeholder="Ex.: Maria"
+                                    maxlength="100"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="whatsapp-solicitacao">
+                                    Seu WhatsApp com DDD
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    id="whatsapp-solicitacao"
+                                    name="whatsapp"
+                                    placeholder="Ex.: (21) 99999-9999"
+                                    maxlength="20"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
                         <div class="modal-actions">
 
                             <button
@@ -596,78 +696,85 @@
 
             </div>
 
-
         </main>
-<!-- MODAL DE LOGIN DO ADMINISTRADOR -->
-<div id="modal-login-admin" class="modal" hidden>
 
-    <div class="modal-content">
 
-        <div class="modal-header">
+        <!-- MODAL DE LOGIN DO ADMINISTRADOR -->
+        <div id="modal-login-admin" class="modal" hidden>
 
-            <div>
-                <h2>Acesso administrativo</h2>
-                <p>Entre para gerenciar doações e solicitações.</p>
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <div>
+                        <h2>Acesso administrativo</h2>
+                        <p>Entre para gerenciar doações e solicitações.</p>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="btn-fechar-login"
+                        class="modal-close"
+                        aria-label="Fechar"
+                    >
+                        &times;
+                    </button>
+
+                </div>
+
+                <form id="form-login-admin" class="form-solicitacao">
+
+                    <div class="form-group">
+
+                        <label for="email-admin">E-mail</label>
+
+                        <input
+                            type="email"
+                            id="email-admin"
+                            name="email"
+                            placeholder="Digite seu e-mail"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="senha-admin">Senha</label>
+
+                        <input
+                            type="password"
+                            id="senha-admin"
+                            name="senha"
+                            placeholder="Digite sua senha"
+                            required
+                        >
+
+                    </div>
+
+                    <p id="mensagem-login-admin" role="alert"></p>
+
+                    <div class="modal-actions">
+
+                        <button
+                            type="button"
+                            id="btn-cancelar-login"
+                            class="button-secondary"
+                        >
+                            Cancelar
+                        </button>
+
+                        <button type="submit" class="button-primary">
+                            Entrar
+                        </button>
+
+                    </div>
+
+                </form>
+
             </div>
-
-            <button
-                type="button"
-                id="btn-fechar-login"
-                class="modal-close"
-                aria-label="Fechar"
-            >
-                &times;
-            </button>
 
         </div>
-
-        <form id="form-login-admin" class="form-solicitacao">
-
-            <div class="form-group">
-                <label for="email-admin">E-mail</label>
-                <input
-                    type="email"
-                    id="email-admin"
-                    name="email"
-                    placeholder="Digite seu e-mail"
-                    required
-                >
-            </div>
-
-            <div class="form-group">
-                <label for="senha-admin">Senha</label>
-                <input
-                    type="password"
-                    id="senha-admin"
-                    name="senha"
-                    placeholder="Digite sua senha"
-                    required
-                >
-            </div>
-
-            <p id="mensagem-login-admin" role="alert"></p>
-
-            <div class="modal-actions">
-
-                <button
-                    type="button"
-                    id="btn-cancelar-login"
-                    class="button-secondary"
-                >
-                    Cancelar
-                </button>
-
-                <button type="submit" class="button-primary">
-                    Entrar
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
-
-</div>
 
     </div>
 

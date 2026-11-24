@@ -5,6 +5,8 @@ const router = express.Router();
 const pool = require('../config/database');
 const autenticarAdmin = require('../middlewares/auth');
 
+const prioridadesPermitidas = ['urgente', 'moderada', 'continua'];
+
 /**
  * @swagger
  * /api/solicitacoes:
@@ -13,7 +15,7 @@ const autenticarAdmin = require('../middlewares/auth');
  *     tags: [Solicitações]
  *     responses:
  *       200:
- *         description: Lista de solicitações retornada com sucesso.
+ *         description: Lista retornada com sucesso.
  *       500:
  *         description: Erro ao buscar solicitações.
  */
@@ -23,7 +25,9 @@ router.get('/', async (req, res) => {
     try {
         const resultado = await pool.query(
             `SELECT id, titulo, descricao, categoria, localizacao,
-                    status, prioridade, data_cadastro AS "dataCadastro"
+                    nome_contato AS "nomeContato",
+                    whatsapp, status, prioridade,
+                    data_cadastro AS "dataCadastro"
              FROM solicitacoes
              ORDER BY id`
         );
@@ -56,24 +60,29 @@ router.get('/', async (req, res) => {
  *               - descricao
  *               - categoria
  *               - localizacao
+ *               - nomeContato
+ *               - whatsapp
  *             properties:
  *               titulo:
  *                 type: string
- *                 example: Preciso de roupas infantis
  *               descricao:
  *                 type: string
- *                 example: Procuro roupas infantis em bom estado.
  *               categoria:
  *                 type: string
- *                 example: Vestuário
  *               localizacao:
  *                 type: string
- *                 example: São Gonçalo - RJ
+ *               nomeContato:
+ *                 type: string
+ *               whatsapp:
+ *                 type: string
+ *               prioridade:
+ *                 type: string
+ *                 enum: [urgente, moderada, continua]
  *     responses:
  *       201:
  *         description: Solicitação cadastrada com sucesso.
  *       400:
- *         description: Campos obrigatórios não preenchidos ou inválidos.
+ *         description: Campos inválidos.
  *       500:
  *         description: Erro ao cadastrar solicitação.
  */
@@ -83,7 +92,6 @@ router.post('/', async (req, res) => {
     try {
         const dados = req.body || {};
         const prioridade = dados.prioridade || 'moderada';
-        const prioridadesPermitidas = ['urgente', 'moderada', 'continua'];
 
         if (!prioridadesPermitidas.includes(prioridade)) {
             return res.status(400).json({
@@ -95,7 +103,9 @@ router.post('/', async (req, res) => {
             dados.titulo,
             dados.descricao,
             dados.categoria,
-            dados.localizacao
+            dados.localizacao,
+            dados.nomeContato,
+            dados.whatsapp
         ];
 
         if (campos.some(campo =>
@@ -106,16 +116,33 @@ router.post('/', async (req, res) => {
             });
         }
 
-        const [titulo, descricao, categoria, localizacao] =
-            campos.map(campo => campo.trim());
+        const [
+            titulo,
+            descricao,
+            categoria,
+            localizacao,
+            nomeContato,
+            whatsapp
+        ] = campos.map(campo => campo.trim());
 
         const resultado = await pool.query(
             `INSERT INTO solicitacoes
-             (titulo, descricao, categoria, localizacao, prioridade)
-             VALUES ($1, $2, $3, $4, $5)
+             (titulo, descricao, categoria, localizacao,
+              nome_contato, whatsapp, prioridade)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)
              RETURNING id, titulo, descricao, categoria, localizacao,
-                       status, prioridade, data_cadastro AS "dataCadastro"`,
-            [titulo, descricao, categoria, localizacao, prioridade]
+                       nome_contato AS "nomeContato", whatsapp,
+                       status, prioridade,
+                       data_cadastro AS "dataCadastro"`,
+            [
+                titulo,
+                descricao,
+                categoria,
+                localizacao,
+                nomeContato,
+                whatsapp,
+                prioridade
+            ]
         );
 
         res.status(201).json({
@@ -146,7 +173,6 @@ router.post('/', async (req, res) => {
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID da solicitação
  *     requestBody:
  *       required: true
  *       content:
@@ -158,28 +184,29 @@ router.post('/', async (req, res) => {
  *               - descricao
  *               - categoria
  *               - localizacao
+ *               - nomeContato
+ *               - whatsapp
  *             properties:
  *               titulo:
  *                 type: string
- *                 example: Preciso de roupas infantis e calçados
  *               descricao:
  *                 type: string
- *                 example: Procuro roupas infantis e calçados em bom estado.
  *               categoria:
  *                 type: string
- *                 example: Vestuário
  *               localizacao:
  *                 type: string
- *                 example: São Gonçalo - RJ
+ *               nomeContato:
+ *                 type: string
+ *               whatsapp:
+ *                 type: string
  *               prioridade:
  *                 type: string
  *                 enum: [urgente, moderada, continua]
- *                 example: moderada
  *     responses:
  *       200:
  *         description: Solicitação atualizada com sucesso.
  *       400:
- *         description: ID ou campos obrigatórios inválidos.
+ *         description: ID ou campos inválidos.
  *       404:
  *         description: Solicitação não encontrada.
  *       500:
@@ -191,15 +218,13 @@ router.put('/:id', autenticarAdmin, async (req, res) => {
     try {
         const id = Number(req.params.id);
         const dados = req.body || {};
+        const prioridade = dados.prioridade || 'moderada';
 
         if (!Number.isInteger(id) || id <= 0) {
             return res.status(400).json({
                 erro: 'Informe um ID válido.'
             });
         }
-
-        const prioridade = req.body.prioridade || 'moderada';
-        const prioridadesPermitidas = ['urgente', 'moderada', 'continua'];
 
         if (!prioridadesPermitidas.includes(prioridade)) {
             return res.status(400).json({
@@ -211,7 +236,9 @@ router.put('/:id', autenticarAdmin, async (req, res) => {
             dados.titulo,
             dados.descricao,
             dados.categoria,
-            dados.localizacao
+            dados.localizacao,
+            dados.nomeContato,
+            dados.whatsapp
         ];
 
         if (campos.some(campo =>
@@ -222,20 +249,39 @@ router.put('/:id', autenticarAdmin, async (req, res) => {
             });
         }
 
-        const [titulo, descricao, categoria, localizacao] =
-            campos.map(campo => campo.trim());
+        const [
+            titulo,
+            descricao,
+            categoria,
+            localizacao,
+            nomeContato,
+            whatsapp
+        ] = campos.map(campo => campo.trim());
 
         const resultado = await pool.query(
             `UPDATE solicitacoes
-            SET titulo = $1,
-                descricao = $2,
-                categoria = $3,
-                localizacao = $4,
-                prioridade = $5
-            WHERE id = $6
+             SET titulo = $1,
+                 descricao = $2,
+                 categoria = $3,
+                 localizacao = $4,
+                 nome_contato = $5,
+                 whatsapp = $6,
+                 prioridade = $7
+             WHERE id = $8
              RETURNING id, titulo, descricao, categoria, localizacao,
-                       status, prioridade, data_cadastro AS "dataCadastro"`,
-            [titulo, descricao, categoria, localizacao, prioridade, id]
+                       nome_contato AS "nomeContato", whatsapp,
+                       status, prioridade,
+                       data_cadastro AS "dataCadastro"`,
+            [
+                titulo,
+                descricao,
+                categoria,
+                localizacao,
+                nomeContato,
+                whatsapp,
+                prioridade,
+                id
+            ]
         );
 
         if (resultado.rows.length === 0) {
@@ -258,7 +304,6 @@ router.put('/:id', autenticarAdmin, async (req, res) => {
 });
 
 
-
 /**
  * @swagger
  * /api/solicitacoes/{id}:
@@ -273,18 +318,17 @@ router.put('/:id', autenticarAdmin, async (req, res) => {
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID da solicitação
  *     responses:
  *       200:
- *         description: Solicitação excluída com sucesso
+ *         description: Solicitação excluída com sucesso.
  *       400:
- *         description: ID inválido
+ *         description: ID inválido.
  *       401:
- *         description: Não autorizado
+ *         description: Não autorizado.
  *       404:
- *         description: Solicitação não encontrada
+ *         description: Solicitação não encontrada.
  *       500:
- *         description: Erro interno do servidor
+ *         description: Erro interno do servidor.
  */
 
 // Excluir uma solicitação
@@ -322,4 +366,3 @@ router.delete('/:id', autenticarAdmin, async (req, res) => {
 });
 
 module.exports = router;
-

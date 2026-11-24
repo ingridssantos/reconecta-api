@@ -4,6 +4,7 @@ const router = express.Router();
 
 const pool = require('../config/database');
 const autenticarAdmin = require('../middlewares/auth');
+
 /**
  * @swagger
  * /api/doacoes:
@@ -22,7 +23,9 @@ router.get('/', async (req, res) => {
     try {
         const resultado = await pool.query(
             `SELECT id, titulo, descricao, categoria, localizacao,
-                    status, data_cadastro AS "dataCadastro"
+                    nome_contato AS "nomeContato",
+                    whatsapp, status,
+                    data_cadastro AS "dataCadastro"
              FROM doacoes
              ORDER BY id`
         );
@@ -55,24 +58,26 @@ router.get('/', async (req, res) => {
  *               - descricao
  *               - categoria
  *               - localizacao
+ *               - nomeContato
+ *               - whatsapp
  *             properties:
  *               titulo:
  *                 type: string
- *                 example: Cesta básica
  *               descricao:
  *                 type: string
- *                 example: Cesta básica com alimentos não perecíveis.
  *               categoria:
  *                 type: string
- *                 example: Alimentos
  *               localizacao:
  *                 type: string
- *                 example: Niterói - RJ
+ *               nomeContato:
+ *                 type: string
+ *               whatsapp:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Doação cadastrada com sucesso.
  *       400:
- *         description: Campos obrigatórios não preenchidos ou inválidos.
+ *         description: Campos obrigatórios inválidos.
  *       500:
  *         description: Erro ao cadastrar doação.
  */
@@ -81,11 +86,14 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const dados = req.body || {};
+
         const campos = [
             dados.titulo,
             dados.descricao,
             dados.categoria,
-            dados.localizacao
+            dados.localizacao,
+            dados.nomeContato,
+            dados.whatsapp
         ];
 
         if (campos.some(campo =>
@@ -96,16 +104,31 @@ router.post('/', async (req, res) => {
             });
         }
 
-        const [titulo, descricao, categoria, localizacao] =
-            campos.map(campo => campo.trim());
+        const [
+            titulo,
+            descricao,
+            categoria,
+            localizacao,
+            nomeContato,
+            whatsapp
+        ] = campos.map(campo => campo.trim());
 
         const resultado = await pool.query(
             `INSERT INTO doacoes
-             (titulo, descricao, categoria, localizacao)
-             VALUES ($1, $2, $3, $4)
+             (titulo, descricao, categoria, localizacao,
+              nome_contato, whatsapp)
+             VALUES ($1, $2, $3, $4, $5, $6)
              RETURNING id, titulo, descricao, categoria, localizacao,
+                       nome_contato AS "nomeContato", whatsapp,
                        status, data_cadastro AS "dataCadastro"`,
-            [titulo, descricao, categoria, localizacao]
+            [
+                titulo,
+                descricao,
+                categoria,
+                localizacao,
+                nomeContato,
+                whatsapp
+            ]
         );
 
         res.status(201).json({
@@ -136,7 +159,6 @@ router.post('/', async (req, res) => {
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID da doação
  *     requestBody:
  *       required: true
  *       content:
@@ -148,6 +170,8 @@ router.post('/', async (req, res) => {
  *               - descricao
  *               - categoria
  *               - localizacao
+ *               - nomeContato
+ *               - whatsapp
  *             properties:
  *               titulo:
  *                 type: string
@@ -157,11 +181,15 @@ router.post('/', async (req, res) => {
  *                 type: string
  *               localizacao:
  *                 type: string
+ *               nomeContato:
+ *                 type: string
+ *               whatsapp:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Doação atualizada com sucesso.
  *       400:
- *         description: ID ou campos obrigatórios inválidos.
+ *         description: ID ou campos inválidos.
  *       404:
  *         description: Doação não encontrada.
  *       500:
@@ -184,7 +212,9 @@ router.put('/:id', autenticarAdmin, async (req, res) => {
             dados.titulo,
             dados.descricao,
             dados.categoria,
-            dados.localizacao
+            dados.localizacao,
+            dados.nomeContato,
+            dados.whatsapp
         ];
 
         if (campos.some(campo =>
@@ -195,19 +225,36 @@ router.put('/:id', autenticarAdmin, async (req, res) => {
             });
         }
 
-        const [titulo, descricao, categoria, localizacao] =
-            campos.map(campo => campo.trim());
+        const [
+            titulo,
+            descricao,
+            categoria,
+            localizacao,
+            nomeContato,
+            whatsapp
+        ] = campos.map(campo => campo.trim());
 
         const resultado = await pool.query(
             `UPDATE doacoes
              SET titulo = $1,
                  descricao = $2,
                  categoria = $3,
-                 localizacao = $4
-             WHERE id = $5
+                 localizacao = $4,
+                 nome_contato = $5,
+                 whatsapp = $6
+             WHERE id = $7
              RETURNING id, titulo, descricao, categoria, localizacao,
+                       nome_contato AS "nomeContato", whatsapp,
                        status, data_cadastro AS "dataCadastro"`,
-            [titulo, descricao, categoria, localizacao, id]
+            [
+                titulo,
+                descricao,
+                categoria,
+                localizacao,
+                nomeContato,
+                whatsapp,
+                id
+            ]
         );
 
         if (resultado.rows.length === 0) {
@@ -236,13 +283,14 @@ router.put('/:id', autenticarAdmin, async (req, res) => {
  *   delete:
  *     summary: Exclui uma doação
  *     tags: [Doações]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID da doação
  *     responses:
  *       200:
  *         description: Doação excluída com sucesso.
