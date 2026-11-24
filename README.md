@@ -126,6 +126,24 @@ Crie as tabelas necessárias para armazenar:
 
 As tabelas devem seguir os campos e tipos utilizados pelas consultas da aplicação.
 
+
+### 4. Criar as tabelas do banco de dados
+
+Após criar o banco de dados `reconecta` no PostgreSQL, execute o script responsável pela criação das tabelas.
+
+1. Abra o pgAdmin e selecione o banco de dados criado.
+2. Abra o Query Tool.
+3. Abra o arquivo `src/config/schema.sql` do projeto.
+4. Execute o script utilizando o botão Execute ou a tecla F5.
+
+O script criará automaticamente as seguintes tabelas:
+
+- `doacoes`
+- `solicitacoes`
+- `administradores`
+
+Após a execução, atualize a visualização do banco no pgAdmin para conferir se as três tabelas foram criadas.
+
 ### 5. Configurar as variáveis de ambiente
 
 Crie um arquivo `.env` na raiz do projeto, utilizando como referência o `.env.example`.
